@@ -15,27 +15,50 @@ const todos = [{
   completed: false
 }]
 
-// const ps = document.querySelectorAll('p')
-// ps.forEach(function (p) {
-//   if (p.textContent.toLowerCase().includes('the')) {
-//     p.remove()
-//   }
-// })
-let todosLeft = 0
-todos.forEach(function (todo){
-  if (!todo.completed) todosLeft ++
-})
+const filters = {
+  searchText: ''
+}
 
-const summary = document.createElement('h2')
-summary.textContent = `You have ${todosLeft} todos left`
-document.querySelector('body').appendChild(summary)
+// Renders Todos according to the given filters
+const renderTodos = function (todos, filters) {
+  const filteredTodos = todos.filter(function (todo) {
+    return todo.text.toLowerCase().includes(filters.searchText.toLowerCase())
+  })
 
-todos.forEach(function (todo) {
-  let newP = document.createElement('p')
-  newP.textContent = todo.text
-  document.querySelector('body').appendChild(newP)
-})
+  document.querySelector('#todo-list').innerHTML = ''
 
+  let todosLeft = 0
+  filteredTodos.forEach(function (todo){
+    if (!todo.completed) todosLeft++
+  })
+
+  const summary = document.createElement('h2')
+  let todoText = (todosLeft === 1) ? 'todo' : 'todos'
+  summary.textContent = `You have ${todosLeft} ${todoText} left`
+  document.querySelector('#todo-list').appendChild(summary)
+
+  filteredTodos.forEach(function (todo) {
+    let p = document.createElement('p')
+    p.textContent = todo.text
+    document.querySelector('#todo-list').appendChild(p)
+  })
+}
+
+// Calls renderTodos to populate the #todo-list when page opens
+renderTodos(todos, filters)
+
+// Listen for new todo creation
 document.querySelector('#add-todo').addEventListener('click', function () {
   console.log("I'm adding a new Todo")
+})
+
+// Listen for todo text change
+document.querySelector('#new-todo').addEventListener('input', function (e) {
+  console.log(e.target.value)
+})
+
+// Listen for search text change
+document.querySelector('#search-text').addEventListener('input', function (e) {
+  filters.searchText = e.target.value
+  renderTodos(todos, filters)
 })
