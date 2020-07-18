@@ -16,13 +16,16 @@ const todos = [{
 }]
 
 const filters = {
-  searchText: ''
+  searchText: '',
+  hideCompleted: false
 }
 
 // Renders Todos according to the given filters
 const renderTodos = function (todos, filters) {
   const filteredTodos = todos.filter(function (todo) {
-    return todo.text.toLowerCase().includes(filters.searchText.toLowerCase())
+    const searchTextMatch = todo.text.toLowerCase().includes(filters.searchText.toLowerCase())
+    const hideCompletedMatch = !filters.hideCompleted || !todo.completed
+    return searchTextMatch && hideCompletedMatch
   })
 
   document.querySelector('#todo-list').innerHTML = ''
@@ -47,18 +50,22 @@ const renderTodos = function (todos, filters) {
 // Calls renderTodos to populate the #todo-list when page opens
 renderTodos(todos, filters)
 
-// Listen for new todo creation
-document.querySelector('#add-todo').addEventListener('click', function () {
-  console.log("I'm adding a new Todo")
-})
-
-// Listen for todo text change
-document.querySelector('#new-todo').addEventListener('input', function (e) {
-  console.log(e.target.value)
-})
-
 // Listen for search text change
 document.querySelector('#search-text').addEventListener('input', function (e) {
   filters.searchText = e.target.value
+  renderTodos(todos, filters)
+})
+
+// Listen for the todo form's submit button
+document.querySelector('#new-todo').addEventListener('submit', function (e) {
+  e.preventDefault()
+  todos.push({text: e.target.elements.todoText.value, completed: false})
+  renderTodos(todos, filters)
+  e.target.elements.todoText.value = ''
+})
+
+// Listen for changes to the hide-completed checkbox
+document.querySelector('#hide-completed').addEventListener('change', function (e) {
+  filters.hideCompleted = e.target.checked
   renderTodos(todos, filters)
 })
