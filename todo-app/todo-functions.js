@@ -21,6 +21,14 @@ const removeTodo = function (todoId) {
   if (i > -1) todos.splice(i, 1)
 }
 
+// Checks or unchecks the given todo
+const toggleTodo = function (todoId) {
+  const todo = todos.find(function (todo) {
+    return todo.id === todoId
+  })
+  if (todo !== undefined) todo.completed = !todo.completed
+}
+
 // Generate a DOM element for a given todo
 const generateTodoDOM = function (todo) {
   const todoEl = document.createElement('div')
@@ -30,7 +38,13 @@ const generateTodoDOM = function (todo) {
 
   // Setup the checkbox
   checkbox.setAttribute('type', 'checkbox')
+  checkbox.checked = todo.completed
   todoEl.appendChild(checkbox)
+  checkbox.addEventListener('change', function () {
+    toggleTodo(todo.id)
+    saveTodos(todos)
+    renderTodos(todos, filters)
+  })
 
   // Setup the todo text
   todoText.textContent = todo.text
